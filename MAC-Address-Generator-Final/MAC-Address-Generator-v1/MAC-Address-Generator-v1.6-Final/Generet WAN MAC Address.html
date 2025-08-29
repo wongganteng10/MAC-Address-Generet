@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAC Address Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="generator-container">
+    <h1>MAC Address Generator</h1>
+
+    <div class="options-group">
+      <label>Pilihan Kombinasi:</label>
+
+      <div class="checkbox-item">
+        <input type="checkbox" id="upper-colon" value="upper:">
+        <label for="upper-colon">Huruf Besar (:)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="upper-dash" value="upper-">
+        <label for="upper-dash">Huruf Besar (-)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="lower-colon" value="lower:">
+        <label for="lower-colon">Huruf Kecil (:)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="lower-dash" value="lower-">
+        <label for="lower-dash">Huruf Kecil (-)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="mix-colon" value="mix:">
+        <label for="mix-colon">Huruf Campur (:)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="mix-dash" value="mix-">
+        <label for="mix-dash">Huruf Campur (-)</label>
+      </div>
+    </div>
+
+    <button id="generate-btn">Generate MAC Address</button>
+
+    <div id="mac-address" class="output">
+      <!-- Hasil MAC address akan muncul di sini -->
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
