@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAC Address Generator</title>
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+
+    .generator-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333333;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 16px;
+      color: #444;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #4caf50;
+      cursor: pointer;
+    }
+
+    .checkbox-item label {
+      margin: 0;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .output {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 16px;
+      padding: 12px;
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      background-color: #fafafa;
+      margin-top: 10px;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+      text-align: left;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    .output div {
+      padding: 6px 8px;
+      margin: 0;
+      border-radius: 4px;
+      /* background-color: #f0f0f0; */
+      /* transition: background-color 0.2s; */
+      width: 100%;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .output div:hover {
+      background-color: #2bff2b;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="generator-container">
+    <h1>MAC Address Generator</h1>
+
+    <div class="options-group">
+      <label>Pilihan Kombinasi:</label>
+
+      <div class="checkbox-item">
+        <input type="checkbox" id="upper-colon" value="upper:">
+        <label for="upper-colon">Huruf Besar (:)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="upper-dash" value="upper-">
+        <label for="upper-dash">Huruf Besar (-)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="lower-colon" value="lower:">
+        <label for="lower-colon">Huruf Kecil (:)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="lower-dash" value="lower-">
+        <label for="lower-dash">Huruf Kecil (-)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="mix-colon" value="mix:">
+        <label for="mix-colon">Huruf Campur (:)</label>
+      </div>
+      <div class="checkbox-item">
+        <input type="checkbox" id="mix-dash" value="mix-">
+        <label for="mix-dash">Huruf Campur (-)</label>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button id="select-all-btn">✅ Semua Check Box</button>
+      <button id="clear-all-btn">✅ Hapus Semua Check Box</button>
+    </div>
+
+    <button id="generate-btn">Generate MAC Address</button>
+
+    <div id="mac-address" class="output">
+      <!-- Hasil MAC address akan muncul di sini -->
+    </div>
+  </div>
+
+  <!-- <script src="script.js"></script> -->
+  <script>
+    // Fungsi generate MAC address
+    function generateMACAddress(letterCase, separator) {
+      const hexDigits = "0123456789ABCDEF";
+      let macParts = [];
+
+      for (let i = 0; i < 6; i++) {
+        let part = "";
+        for (let j = 0; j < 2; j++) {
+          let char = hexDigits.charAt(Math.floor(Math.random() * 16));
+          if (letterCase === "lower") char = char.toLowerCase();
+          else if (letterCase === "mix") char = Math.random() < 0.5 ? char.toLowerCase() : char;
+          part += char;
+        }
+        macParts.push(part);
+      }
+
+      return macParts.join(separator);
+    }
+
+    // Generate MAC dari checkbox yang dipilih
+    function generateSelectedMACs() {
+      const checkedBoxes = document.querySelectorAll('.options-group input[type="checkbox"]:checked');
+
+      if (checkedBoxes.length === 0) {
+        alert("Silakan pilih minimal satu kombinasi!");
+        return;
+      }
+
+      const outputDiv = document.getElementById("mac-address");
+      outputDiv.innerHTML = ""; // bersihkan hasil sebelumnya
+
+      checkedBoxes.forEach(box => {
+        const value = box.value;
+        const letterCase = value.slice(0, -1);
+        const separator = value.slice(-1);
+        const mac = generateMACAddress(letterCase, separator);
+
+        const macDiv = document.createElement("div");
+        macDiv.textContent = `${letterCase.toUpperCase()} (${separator}) → ${mac}`;
+
+        // Klik untuk copy
+        macDiv.addEventListener("click", () => {
+          navigator.clipboard.writeText(mac).then(() => {
+            macDiv.style.backgroundColor = "#c8ffc8"; // feedback visual
+            setTimeout(() => macDiv.style.backgroundColor = "#f0f0f0", 500);
+          });
+        });
+
+        outputDiv.appendChild(macDiv);
+      });
+    }
+
+    // Pilih semua checkbox
+    function selectAllCheckboxes() {
+      document.querySelectorAll('.options-group input[type="checkbox"]').forEach(box => box.checked = true);
+    }
+
+    // Hapus semua checkbox
+    function clearAllCheckboxes() {
+      document.querySelectorAll('.options-group input[type="checkbox"]').forEach(box => box.checked = false);
+    }
+
+    // Event listeners
+    document.getElementById("generate-btn").addEventListener("click", generateSelectedMACs);
+    document.getElementById("select-all-btn").addEventListener("click", selectAllCheckboxes);
+    document.getElementById("clear-all-btn").addEventListener("click", clearAllCheckboxes);
+
+  </script>
+</body>
+
+</html>

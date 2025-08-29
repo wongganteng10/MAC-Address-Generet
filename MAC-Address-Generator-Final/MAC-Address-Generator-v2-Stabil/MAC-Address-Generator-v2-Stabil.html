@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAC Address Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+
+    .generator-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 420px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #333333;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    input[type="number"] {
+      font-size: 14px;
+      padding: 5px;
+      width: 80px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 5px;
+    }
+
+    .options {
+      text-align: left;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+      font-size: 14px;
+    }
+
+    .options label {
+      display: block;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+
+    .mac-list {
+      margin-top: 15px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .mac-item {
+      font-size: 18px;
+      padding: 8px;
+      margin: 5px 0;
+      background: #f0f0f0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .mac-item:hover {
+      background: #e0e0e0;
+    }
+
+    .copied {
+      background-color: #c8ffc8 !important;
+      transition: background-color 0.5s;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="generator-container">
+    <h1>MAC Address Generator</h1>
+    <label for="count">Jumlah:</label>
+    <input type="number" id="count" min="1" value="5">
+
+    <div class="options">
+      <label><input type="checkbox" class="format" value="upper:"> Huruf Besar (:)</label>
+      <label><input type="checkbox" class="format" value="upper-"> Huruf Besar (-)</label>
+      <label><input type="checkbox" class="format" value="lower:"> Huruf Kecil (:)</label>
+      <label><input type="checkbox" class="format" value="lower-"> Huruf Kecil (-)</label>
+      <label><input type="checkbox" class="format" value="mixed:"> Huruf Campur (:)</label>
+      <label><input type="checkbox" class="format" value="mixed-"> Huruf Campur (-)</label>
+      <button type="button" id="select-all">Semua Check Box</button>
+      <button type="button" id="clear-all">Hapus semua Check Box</button>
+    </div>
+
+    <button id="generate-btn">Generate</button>
+    <button id="copy-all">Copy Semua</button>
+
+    <div class="mac-list" id="mac-list"></div>
+  </div>
+
+  <script>
+    function generateMACAddress(format) {
+      const hexDigits = "0123456789ABCDEF";
+      let mac = "";
+
+      for (let i = 0; i < 6; i++) {
+        mac += hexDigits.charAt(Math.floor(Math.random() * 16));
+        mac += hexDigits.charAt(Math.floor(Math.random() * 16));
+        if (i !== 5) mac += format.includes(":") ? ":" : "-";
+      }
+
+      // apply format
+      if (format.startsWith("upper")) {
+        mac = mac.toUpperCase();
+      } else if (format.startsWith("lower")) {
+        mac = mac.toLowerCase();
+      } else if (format.startsWith("mixed")) {
+        mac = mac.split("").map(c =>
+          /[A-F]/.test(c) && Math.random() > 0.5 ? c.toLowerCase() : c
+        ).join("");
+      }
+      return mac;
+    }
+
+    const generateBtn = document.getElementById("generate-btn");
+    const copyAllBtn = document.getElementById("copy-all");
+    const macList = document.getElementById("mac-list");
+
+    generateBtn.addEventListener("click", () => {
+      macList.innerHTML = "";
+      const count = parseInt(document.getElementById("count").value) || 1;
+      const selectedFormats = [...document.querySelectorAll(".format:checked")].map(cb => cb.value);
+
+      if (selectedFormats.length === 0) {
+        alert("Pilih minimal satu format!");
+        return;
+      }
+
+      for (let format of selectedFormats) {
+        for (let i = 0; i < count; i++) {
+          const mac = generateMACAddress(format);
+          const macDiv = document.createElement("div");
+          macDiv.className = "mac-item";
+          macDiv.textContent = mac;
+
+          macDiv.addEventListener("click", () => {
+            navigator.clipboard.writeText(mac).then(() => {
+              macDiv.classList.add("copied");
+              setTimeout(() => macDiv.classList.remove("copied"), 500);
+            });
+          });
+
+          macList.appendChild(macDiv);
+        }
+      }
+    });
+
+    // Copy Semua
+    copyAllBtn.addEventListener("click", () => {
+      const macs = [...document.querySelectorAll(".mac-item")].map(el => el.textContent);
+      if (macs.length === 0) {
+        alert("Belum ada MAC address untuk dicopy!");
+        return;
+      }
+      navigator.clipboard.writeText(macs.join("\n")).then(() => {
+        copyAllBtn.textContent = "✅ Tersalin!";
+        setTimeout(() => copyAllBtn.textContent = "Copy Semua", 1000);
+      });
+    });
+
+    // Select all / clear all
+    document.getElementById("select-all").addEventListener("click", () => {
+      document.querySelectorAll(".format").forEach(cb => cb.checked = true);
+    });
+
+    document.getElementById("clear-all").addEventListener("click", () => {
+      document.querySelectorAll(".format").forEach(cb => cb.checked = false);
+    });
+  </script>
+</body>
+
+</html>
